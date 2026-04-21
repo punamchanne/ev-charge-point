@@ -7,6 +7,7 @@ import {
   Zap, Users, FileText, BarChart as BarIcon, 
   LogOut, Menu, X 
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   Zap, Clock, CreditCard, LogOut, CheckCircle, 
   Loader2, X, History, LayoutDashboard, User as UserIcon,
-  ChevronRight, Calendar
+  ChevronRight, Calendar, ShieldCheck, Lock, ChevronLeft
 } from "lucide-react";
 import Image from "next/image";
 
@@ -16,6 +16,17 @@ export default function UserDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard"); // 'dashboard' or 'history'
   const [bookings, setBookings] = useState<any[]>([]);
   const [loadingBookings, setLoadingBookings] = useState(false);
+  
+  // Payment Animation State
+  const [showPayment, setShowPayment] = useState(false);
+  const [paymentStep, setPaymentStep] = useState<"details" | "banking" | "processing" | "success">("details");
+  const [paymentAmount, setPaymentAmount] = useState(0);
+  const [selectedSlot, setSelectedSlot] = useState<any>(null);
+
+  // Charging Timer State
+  const [isCharging, setIsCharging] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0); // in seconds
+  const [chargingComplete, setChargingComplete] = useState(false);
   
   // Booking/OTP State
   const [activeBooking, setActiveBooking] = useState<any>(null);
@@ -41,6 +52,27 @@ export default function UserDashboard() {
     }
   }, [router]);
 
+  // Timer Effect
+  useEffect(() => {
+    let timer: any;
+    if (isCharging && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && isCharging) {
+      setIsCharging(false);
+      setChargingComplete(true);
+      clearInterval(timer);
+    }
+    return () => clearInterval(timer);
+  }, [isCharging, timeLeft]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const fetchHistory = async (userId: string) => {
     setLoadingBookings(true);
     try {
@@ -62,17 +94,29 @@ export default function UserDashboard() {
   ];
 
   const handleBooking = async (slot: any) => {
-    setLoading(slot.type);
+    setSelectedSlot(slot);
+    setPaymentAmount(slot.price);
+    setShowPayment(true);
+    setPaymentStep("details");
+  };
+
+  const processPayment = async () => {
+    setPaymentStep("processing");
     try {
-      // Simulate Payment
+      // Simulate Razorpay Network Delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setPaymentStep("success");
+      
+      // Wait for success animation
       await new Promise(resolve => setTimeout(resolve, 1500));
+      setShowPayment(false);
 
       const res = await fetch("/api/booking/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          slotType: slot.type,
-          price: slot.price,
+          slotType: selectedSlot.type,
+          price: selectedSlot.price,
           email: user.email,
           userId: user.id
         })
@@ -83,9 +127,10 @@ export default function UserDashboard() {
 
       setActiveBooking(data.booking);
       setShowVerify(true);
-      fetchHistory(user.id); // Refresh history
+      fetchHistory(user.id);
     } catch (err: any) {
       alert(err.message);
+      setShowPayment(false);
     } finally {
       setLoading(null);
     }
@@ -111,6 +156,12 @@ export default function UserDashboard() {
       
       setTimeout(() => {
         setShowVerify(false);
+        // Start Charging Timer
+        const minutes = parseInt(activeBooking.slotType.replace("min", ""));
+        setTimeLeft(minutes * 60);
+        setIsCharging(true);
+        setChargingComplete(false);
+
         setActiveBooking(null);
         setOtpInput("");
         setVerificationResult(null);
@@ -226,6 +277,47 @@ export default function UserDashboard() {
                 <h2 className="text-4xl font-black text-slate-900 tracking-tight">Active Infrastructure</h2>
                 <p className="text-slate-500 font-medium mt-2">Parikrama Faculty of Engineering - Smart Charging Grid</p>
               </div>
+
+              {/* Charging Timer Section */}
+              <AnimatePresence>
+                {(isCharging || chargingComplete) && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={`mb-10 p-8 rounded-[3rem] border-4 flex flex-col md:flex-row items-center justify-between gap-8 ${
+                      chargingComplete ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-900 border-primary/20 shadow-2xl shadow-primary/20'
+                    }`}
+                  >
+                    <div className="flex items-center gap-6">
+                       <div className={`p-4 rounded-3xl ${chargingComplete ? 'bg-emerald-100 text-emerald-600' : 'bg-primary/20 text-primary animate-pulse'}`}>
+                          <Zap className="w-8 h-8 font-bold" />
+                       </div>
+                       <div>
+                          <h3 className={`text-2xl font-black ${chargingComplete ? 'text-emerald-900' : 'text-white'}`}>
+                            {chargingComplete ? "Charging Successful!" : "Charging in Progress..."}
+                          </h3>
+                          <p className={chargingComplete ? 'text-emerald-600 font-bold' : 'text-slate-400 font-bold'}>
+                             {chargingComplete ? "Vehicle is fully charged and ready." : "Your EV is being powered by Parikrama Green Grid."}
+                          </p>
+                       </div>
+                    </div>
+
+                    {!chargingComplete ? (
+                      <div className="flex flex-col items-center md:items-end">
+                         <span className="text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-2">Time Remaining</span>
+                         <span className="text-6xl font-black text-white tabular-nums tracking-tighter">{formatTime(timeLeft)}</span>
+                      </div>
+                    ) : (
+                      <button 
+                        onClick={() => setChargingComplete(false)}
+                        className="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all"
+                      >
+                        Acknowledge
+                      </button>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {slots.map((slot, i) => (
@@ -405,6 +497,128 @@ export default function UserDashboard() {
                   </div>
                 </div>
               )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Razorpay Simulated Payment Modal */}
+      <AnimatePresence>
+        {showPayment && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative bg-white w-full max-w-[400px] rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+            >
+              {/* Top Blue Bar (Razorpay style) */}
+              <div className="bg-[#02042b] p-6 text-white flex flex-col items-center relative">
+                 {paymentStep === "details" && (
+                   <button onClick={() => setShowPayment(false)} className="absolute left-4 top-6 text-white/50 hover:text-white">
+                      <ChevronLeft className="w-5 h-5" />
+                   </button>
+                 )}
+                 <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-4">
+                    <Zap className="text-white w-6 h-6" />
+                 </div>
+                 <h3 className="font-bold text-lg mb-1">Parikrama EV Grid</h3>
+                 <p className="text-white/70 text-sm">₹{paymentAmount}.00</p>
+              </div>
+
+              {/* Status Section */}
+              <div className="flex flex-col bg-white min-h-[300px]">
+                {paymentStep === "details" ? (
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="mb-6">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-4">Payment Methods</p>
+                      <div className="space-y-3">
+                        <button onClick={() => setPaymentStep("banking")} className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all border border-slate-100 group">
+                           <div className="flex items-center gap-4">
+                              <div className="bg-white p-2 rounded-lg shadow-sm group-hover:scale-110 transition-transform"><CreditCard className="w-5 h-5 text-primary" /></div>
+                              <span className="font-bold text-slate-700">Cards, UPI & Netbanking</span>
+                           </div>
+                           <ChevronRight className="w-4 h-4 text-slate-300" />
+                        </button>
+                        <div className="p-4 bg-slate-50 opacity-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                            <span className="font-bold text-slate-400">Wallet / Pay Later</span>
+                            <Lock className="w-3 h-3 text-slate-300" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-auto p-4 bg-blue-50 rounded-xl flex gap-3 items-start">
+                       <ShieldCheck className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                       <p className="text-[11px] text-blue-700 font-medium leading-relaxed">
+                          Your payment is protected by Razorpay. By continuing, you agree to our terms.
+                       </p>
+                    </div>
+                  </div>
+                ) : paymentStep === "banking" ? (
+                  <div className="p-6 flex flex-col flex-1">
+                     <h4 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <ChevronLeft className="w-4 h-4 cursor-pointer" onClick={() => setPaymentStep("details")} /> Select Bank
+                     </h4>
+                     <div className="grid grid-cols-2 gap-3 mb-8">
+                        {["HDFC", "SBI", "ICICI", "AXIS"].map(bank => (
+                          <button key={bank} onClick={processPayment} className="p-4 border-2 border-slate-100 hover:border-primary/30 hover:bg-primary/5 rounded-xl transition-all text-center">
+                             <div className="w-8 h-8 bg-slate-100 rounded-full mx-auto mb-2 flex items-center justify-center font-black text-[10px] text-slate-400">{bank[0]}</div>
+                             <span className="text-xs font-bold text-slate-600">{bank} Bank</span>
+                          </button>
+                        ))}
+                     </div>
+                     <button onClick={processPayment} className="mt-auto w-full py-4 bg-primary text-white font-black rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
+                        Pay ₹{paymentAmount}
+                     </button>
+                  </div>
+                ) : paymentStep === "processing" ? (
+                  <div className="p-8 flex flex-col items-center justify-center flex-1">
+                    <motion.div 
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                      className="w-16 h-16 border-4 border-slate-100 border-t-[#3388ff] rounded-full mb-6"
+                    />
+                    <h4 className="text-lg font-bold text-slate-800">Processing Payment</h4>
+                    <p className="text-slate-500 text-sm mt-2 text-center underline px-10">Please authorized the transaction on your bank's page</p>
+                  </div>
+                ) : (
+                  <motion.div 
+                     initial={{ scale: 0.8, opacity: 0 }}
+                     animate={{ scale: 1, opacity: 1 }}
+                     className="p-8 flex flex-col items-center justify-center flex-1"
+                  >
+                    <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6">
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+                      >
+                        <CheckCircle className="text-green-500 w-10 h-10" />
+                      </motion.div>
+                    </div>
+                    <h4 className="text-xl font-bold text-slate-800">Payment Successful</h4>
+                    <p className="text-slate-500 text-sm mt-2">Redirecting to charger...</p>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Bottom Footer styled like Razorpay */}
+              <div className="bg-slate-50 border-t border-slate-100 p-4 flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-slate-400">
+                  <Lock className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Secured by</span>
+                  <span className="text-slate-800 font-black text-xs tracking-tight italic">Razorpay</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                  <CreditCard className="w-4 h-4 text-slate-300" />
+                </div>
+              </div>
             </motion.div>
           </div>
         )}

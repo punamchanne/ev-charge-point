@@ -25,8 +25,15 @@ export default function RegisterPage() {
         body: JSON.stringify(formData),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Registration failed");
+      const contentType = res.headers.get("content-type");
+      let data;
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        throw new Error("Server returned non-JSON response (likely a 404 or redirect)");
+      }
+
+      if (!res.ok) throw new Error(data?.error || "Registration failed");
 
       router.push("/login");
     } catch (err: any) {

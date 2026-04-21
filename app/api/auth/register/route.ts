@@ -3,7 +3,12 @@ import dbConnect from "@/lib/mongodb";
 import { User } from "@/models/User";
 import bcrypt from "bcryptjs";
 
+export async function GET() {
+  return NextResponse.json({ message: "Registration route is active" });
+}
+
 export async function POST(req: Request) {
+  console.log("Registration request received");
   try {
     const { name, email, password } = await req.json();
     await dbConnect();

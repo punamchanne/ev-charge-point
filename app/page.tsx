@@ -64,7 +64,6 @@ export default function LandingPage() {
           <a href="#contact" className="nav-link">Support</a>
         </div>
         <div className="flex gap-1.5 md:gap-4 items-center flex-wrap justify-end">
-          <Link href="/dashboard/user" className="text-primary font-bold hover:text-accent transition-colors py-1.5 px-2.5 md:py-2 md:px-4 text-[10px] md:text-base border-2 border-primary/10 rounded-xl leading-none">Dashboard</Link>
           <Link href="/dashboard/user" className="bg-secondary hover:bg-amber-500 text-slate-900 font-bold py-1.5 px-2.5 md:py-2 md:px-6 text-[10px] md:text-base rounded-xl transition-all shadow-lg shadow-secondary/20 active:scale-95 leading-none">Book Slot</Link>
         </div>
       </nav>

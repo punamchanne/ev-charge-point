@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Zap, Clock, CreditCard, LogOut, CheckCircle, 
@@ -13,9 +14,6 @@ import Image from "next/image";
 export default function UserDashboard() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("dashboard"); // 'dashboard' or 'history'
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [loadingBookings, setLoadingBookings] = useState(false);
   
   // Payment Animation State
   const [showPayment, setShowPayment] = useState(false);
@@ -61,7 +59,6 @@ export default function UserDashboard() {
       const defaultUser = generateDefaultUser();
       localStorage.setItem("user", JSON.stringify(defaultUser));
       setUser(defaultUser);
-      fetchHistory(defaultUser.id);
     } else {
       try {
         const parsedUser = JSON.parse(userData);
@@ -70,16 +67,13 @@ export default function UserDashboard() {
           const defaultUser = generateDefaultUser();
           localStorage.setItem("user", JSON.stringify(defaultUser));
           setUser(defaultUser);
-          fetchHistory(defaultUser.id);
         } else {
           setUser(parsedUser);
-          fetchHistory(parsedUser.id);
         }
       } catch (err) {
         const defaultUser = generateDefaultUser();
         localStorage.setItem("user", JSON.stringify(defaultUser));
         setUser(defaultUser);
-        fetchHistory(defaultUser.id);
       }
     }
   }, [router]);
@@ -105,24 +99,7 @@ export default function UserDashboard() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const fetchHistory = async (userId: string) => {
-    setLoadingBookings(true);
-    try {
-      const res = await fetch(`/api/user/bookings?userId=${userId}`);
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        setBookings(data);
-      } else {
-        console.error("Failed to fetch history: data is not an array", data);
-        setBookings([]);
-      }
-    } catch (err) {
-      console.error("Failed to fetch history:", err);
-      setBookings([]);
-    } finally {
-      setLoadingBookings(false);
-    }
-  };
+
 
   const slots = [
     { type: "15min", price: 30, units: 15, time: "15 minutes" },
@@ -165,7 +142,6 @@ export default function UserDashboard() {
 
       setActiveBooking(data.booking);
       setShowVerify(true);
-      fetchHistory(user.id);
     } catch (err: any) {
       alert(err.message);
       setShowPayment(false);
@@ -190,7 +166,6 @@ export default function UserDashboard() {
       if (!res.ok) throw new Error(data.error);
 
       setVerificationResult("success");
-      fetchHistory(user.id); // Refresh history status
       
       setTimeout(() => {
         setShowVerify(false);
@@ -231,9 +206,9 @@ export default function UserDashboard() {
       {/* Mobile Top Header */}
       <div className="lg:hidden flex items-center justify-between p-4 border-b border-slate-100 bg-white sticky top-0 z-50 shadow-sm">
          <Image src="/logo-v3.png" alt="Logo" width={60} height={60} className="object-contain" />
-         <button onClick={handleLogout} className="p-2 text-red-500 bg-red-50 rounded-lg active:scale-95 transition-all">
-            <LogOut className="w-5 h-5" />
-         </button>
+         <Link href="/" className="flex items-center gap-1.5 text-slate-500 hover:text-slate-800 font-bold text-xs bg-slate-50 hover:bg-slate-100 py-2 px-3 rounded-xl border border-slate-100 transition-all active:scale-95 shadow-sm">
+            <ChevronLeft className="w-4 h-4" /> Back / मागे जा
+         </Link>
       </div>
 
       {/* Sidebar - Desktop */}
@@ -246,27 +221,14 @@ export default function UserDashboard() {
             </div>
          </div>
 
-        <nav className="space-y-4 flex-1">
-          <button 
-            onClick={() => setActiveTab("dashboard")}
-            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${
-              activeTab === 'dashboard' ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
-            }`}
-          >
-            <LayoutDashboard className="w-5 h-5" />
-            Booking Slots
-          </button>
-          
-          <button 
-            onClick={() => setActiveTab("history")}
-            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${
-              activeTab === 'history' ? 'bg-primary text-white shadow-xl shadow-primary/20' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'
-            }`}
-          >
-            <History className="w-5 h-5" />
-            Booking History
-          </button>
-        </nav>
+         <nav className="space-y-4 flex-1">
+           <div 
+             className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold bg-primary text-white shadow-xl shadow-primary/20"
+           >
+             <LayoutDashboard className="w-5 h-5" />
+             Booking Slots
+           </div>
+         </nav>
 
         <div className="pt-8 border-t border-slate-100 mt-auto">
            <div className="bg-slate-50 p-6 rounded-3xl flex flex-col gap-4">
@@ -279,195 +241,97 @@ export default function UserDashboard() {
                     <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Institutional Member</p>
                  </div>
               </div>
-              <button 
-                onClick={handleLogout}
-                className="flex items-center justify-center gap-2 w-full py-3 bg-white text-red-500 font-bold rounded-xl text-sm border border-red-50 hover:bg-red-50 transition-colors shadow-sm"
-              >
-                <LogOut className="w-4 h-4" /> Log Out
-              </button>
+              <Link 
+                 href="/"
+                 className="flex items-center justify-center gap-2 w-full py-3.5 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 font-bold rounded-xl text-sm border border-slate-200/60 transition-colors shadow-sm"
+               >
+                 <ChevronLeft className="w-4 h-4" /> Back to Home / मागे जा
+               </Link>
            </div>
         </div>
       </aside>
 
-      {/* Mobile Bottom Navigation */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 p-4 flex justify-around items-center z-50">
-          <button onClick={() => setActiveTab("dashboard")} className={`flex flex-col items-center gap-1 transition-all ${activeTab === 'dashboard' ? 'text-primary scale-110' : 'text-slate-300'}`}>
-             <LayoutDashboard className="w-6 h-6" />
-             <span className="text-[9px] font-black uppercase tracking-widest">Slots</span>
-          </button>
-          <button onClick={() => setActiveTab("history")} className={`flex flex-col items-center gap-1 transition-all ${activeTab === 'history' ? 'text-primary scale-110' : 'text-slate-300'}`}>
-             <History className="w-6 h-6" />
-             <span className="text-[9px] font-black uppercase tracking-widest">History</span>
-          </button>
-      </div>
+
 
       {/* Content Area */}
-      <main className="flex-1 p-6 lg:p-10 bg-slate-50 overflow-y-auto min-h-screen pb-24 lg:pb-10">
-        <AnimatePresence mode="wait">
-          {activeTab === "dashboard" ? (
+      <main className="flex-1 p-6 lg:p-10 bg-slate-50 overflow-y-auto min-h-screen pb-10 lg:pb-10">
+        <div className="mb-12">
+          <h2 className="text-4xl font-black text-slate-900 tracking-tight">Active Infrastructure</h2>
+          <p className="text-slate-500 font-medium mt-2">Parikrama Faculty of Engineering - Smart Charging Grid</p>
+        </div>
+
+        {/* Charging Timer Section */}
+        <AnimatePresence>
+          {(isCharging || chargingComplete) && (
             <motion.div 
-              key="dash"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className={`mb-10 p-8 rounded-[3rem] border-4 flex flex-col md:flex-row items-center justify-between gap-8 ${
+                chargingComplete ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-900 border-primary/20 shadow-2xl shadow-primary/20'
+              }`}
             >
-              <div className="mb-12">
-                <h2 className="text-4xl font-black text-slate-900 tracking-tight">Active Infrastructure</h2>
-                <p className="text-slate-500 font-medium mt-2">Parikrama Faculty of Engineering - Smart Charging Grid</p>
-              </div>
-
-              {/* Charging Timer Section */}
-              <AnimatePresence>
-                {(isCharging || chargingComplete) && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className={`mb-10 p-8 rounded-[3rem] border-4 flex flex-col md:flex-row items-center justify-between gap-8 ${
-                      chargingComplete ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-900 border-primary/20 shadow-2xl shadow-primary/20'
-                    }`}
-                  >
-                    <div className="flex items-center gap-6">
-                       <div className={`p-4 rounded-3xl ${chargingComplete ? 'bg-emerald-100 text-emerald-600' : 'bg-primary/20 text-primary animate-pulse'}`}>
-                          <Zap className="w-8 h-8 font-bold" />
-                       </div>
-                       <div>
-                          <h3 className={`text-2xl font-black ${chargingComplete ? 'text-emerald-900' : 'text-white'}`}>
-                            {chargingComplete ? "Charging Successful!" : "Charging in Progress..."}
-                          </h3>
-                          <p className={chargingComplete ? 'text-emerald-600 font-bold' : 'text-slate-400 font-bold'}>
-                             {chargingComplete ? "Vehicle is fully charged and ready." : "Your EV is being powered by Parikrama Green Grid."}
-                          </p>
-                       </div>
-                    </div>
-
-                    {!chargingComplete ? (
-                      <div className="flex flex-col items-center md:items-end">
-                         <span className="text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-2">Time Remaining</span>
-                         <span className="text-6xl font-black text-white tabular-nums tracking-tighter">{formatTime(timeLeft)}</span>
-                      </div>
-                    ) : (
-                      <button 
-                        onClick={() => setChargingComplete(false)}
-                        className="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all"
-                      >
-                        Acknowledge
-                      </button>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {slots.map((slot, i) => (
-                  <motion.div 
-                    key={i}
-                    whileHover={{ y: -5 }}
-                    className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col items-center text-center relative overflow-hidden group"
-                  >
-                    <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-bl-[3rem]"></div>
-                    <div className="bg-slate-50 p-5 rounded-3xl mb-8 border border-slate-100">
-                      <Zap className="text-primary w-8 h-8" />
-                    </div>
-                    <h3 className="text-2xl font-black text-slate-800 leading-none">{slot.time}</h3>
-                    <p className="bg-secondary/10 text-primary text-[10px] font-black px-3 py-1 rounded-full mt-4 border border-secondary/20">
-                      {slot.units} UNITS
+              <div className="flex items-center gap-6">
+                 <div className={`p-4 rounded-3xl ${chargingComplete ? 'bg-emerald-100 text-emerald-600' : 'bg-primary/20 text-primary animate-pulse'}`}>
+                    <Zap className="w-8 h-8 font-bold" />
+                 </div>
+                 <div>
+                    <h3 className={`text-2xl font-black ${chargingComplete ? 'text-emerald-900' : 'text-white'}`}>
+                      {chargingComplete ? "Charging Successful!" : "Charging in Progress..."}
+                    </h3>
+                    <p className={chargingComplete ? 'text-emerald-600 font-bold' : 'text-slate-400 font-bold'}>
+                       {chargingComplete ? "Vehicle is fully charged and ready." : "Your EV is being powered by Parikrama Green Grid."}
                     </p>
-                    
-                    <div className="mt-10 mb-8 border-t border-slate-50 pt-8 w-full text-center">
-                      <span className="text-xs font-black text-slate-300 uppercase tracking-widest block mb-1">Price Plan</span>
-                      <span className="text-4xl font-black text-slate-900">₹{slot.price}</span>
-                    </div>
-
-                    <button 
-                      onClick={() => handleBooking(slot)}
-                      disabled={loading !== null}
-                      className="bg-primary hover:bg-primary-dark text-white font-black w-full py-5 rounded-[2rem] text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-50"
-                    >
-                      {loading === slot.type ? <Loader2 className="animate-spin w-5 h-5" /> : <>Book Now <CreditCard className="w-4 h-4" /></>}
-                    </button>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div 
-              key="history"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-            >
-              <div className="mb-12">
-                <h2 className="text-4xl font-black text-slate-900 tracking-tight">Booking History</h2>
-                <p className="text-slate-500 font-medium mt-2">View your past charging sessions and generated OTPs.</p>
+                 </div>
               </div>
 
-              <div className="bg-white rounded-[3rem] p-10 shadow-xl shadow-slate-200/50 border border-slate-100">
-                {loadingBookings ? (
-                   <div className="flex flex-col items-center justify-center py-20 gap-4">
-                      <Loader2 className="animate-spin text-primary w-10 h-10" />
-                      <p className="font-bold text-slate-400 uppercase text-xs tracking-widest">Loading Records...</p>
-                   </div>
-                ) : bookings.length === 0 ? (
-                  <div className="text-center py-20">
-                     <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <History className="text-slate-300 w-10 h-10" />
-                     </div>
-                     <p className="text-xl font-bold text-slate-800">No bookings yet</p>
-                     <p className="text-slate-400 mt-2">Start your first charging session from the dashboard.</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                      <thead>
-                        <tr className="border-b border-slate-50 text-slate-400 text-xs font-black uppercase tracking-widest">
-                          <th className="pb-6 px-4">Slot Details</th>
-                          <th className="pb-6 px-4">Session Date</th>
-                          <th className="pb-6 px-4">Pricing</th>
-                          <th className="pb-6 px-4">Assigned OTP</th>
-                          <th className="pb-6 px-4">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-50">
-                        {bookings.map((b) => (
-                          <tr key={b._id} className="hover:bg-slate-50/50 transition-colors group">
-                            <td className="py-6 px-4">
-                               <div className="flex items-center gap-3">
-                                  <div className="bg-primary/5 p-3 rounded-xl">
-                                     <Zap className="text-primary w-5 h-5" />
-                                  </div>
-                                  <span className="font-black text-slate-800">{b.slotType}</span>
-                               </div>
-                            </td>
-                            <td className="py-6 px-4">
-                               <div className="flex items-center gap-2 text-slate-600 font-bold">
-                                  <Calendar className="w-4 h-4 text-slate-300" />
-                                  {new Date(b.createdAt).toLocaleDateString()}
-                                  <span className="text-slate-300 ml-1 font-medium">{new Date(b.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                               </div>
-                            </td>
-                            <td className="py-6 px-4 text-lg font-black text-slate-900">₹{b.price}</td>
-                            <td className="py-6 px-4">
-                               <span className="font-mono bg-slate-900 text-secondary px-3 py-1.5 rounded-lg text-sm font-bold tracking-widest">
-                                 {b.otp}
-                               </span>
-                            </td>
-                            <td className="py-6 px-4 text-center">
-                               <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
-                                 b.status === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'
-                               }`}>
-                                 {b.status}
-                               </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
+              {!chargingComplete ? (
+                <div className="flex flex-col items-center md:items-end">
+                   <span className="text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-2">Time Remaining</span>
+                   <span className="text-6xl font-black text-white tabular-nums tracking-tighter">{formatTime(timeLeft)}</span>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => setChargingComplete(false)}
+                  className="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all"
+                >
+                  Acknowledge
+                </button>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {slots.map((slot, i) => (
+            <motion.div 
+              key={i}
+              whileHover={{ y: -5 }}
+              className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col items-center text-center relative overflow-hidden group"
+            >
+              <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-bl-[3rem]"></div>
+              <div className="bg-slate-50 p-5 rounded-3xl mb-8 border border-slate-100">
+                <Zap className="text-primary w-8 h-8" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-800 leading-none">{slot.time}</h3>
+              <p className="bg-secondary/10 text-primary text-[10px] font-black px-3 py-1 rounded-full mt-4 border border-secondary/20">
+                {slot.units} UNITS
+              </p>
+              
+              <div className="mt-10 mb-8 border-t border-slate-50 pt-8 w-full text-center">
+                <span className="text-xs font-black text-slate-300 uppercase tracking-widest block mb-1">Price Plan</span>
+                <span className="text-4xl font-black text-slate-900">₹{slot.price}</span>
+              </div>
+
+              <button 
+                onClick={() => handleBooking(slot)}
+                disabled={loading !== null}
+                className="bg-primary hover:bg-primary-dark text-white font-black w-full py-5 rounded-[2rem] text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-50"
+              >
+                {loading === slot.type ? <Loader2 className="animate-spin w-5 h-5" /> : <>Book Now <CreditCard className="w-4 h-4" /></>}
+              </button>
+            </motion.div>
+          ))}
+        </div>
       </main>
 
       {/* Verification Modal (Remains the same but styled better) */}

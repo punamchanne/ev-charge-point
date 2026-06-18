@@ -459,26 +459,63 @@ export default function UserDashboard() {
                       <X className="w-6 h-6" />
                     </button>
                   </div>
-                  <p className="text-slate-500 font-medium mb-10 leading-relaxed">
-                    A secure OTP has been dispatched to <b>{user.email}</b>. Enter it to activate the charger at <b>Parking Zone B</b>.
+                  <p className="text-slate-500 font-medium mb-6 leading-relaxed text-sm">
+                    A secure OTP has been dispatched to <b>{user.email}</b>. Enter it below to activate the charger.
                   </p>
-                  <div className="space-y-8">
+
+                  {/* Rural-Friendly / Simplified OTP Display Box */}
+                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-200/60 rounded-[2rem] p-6 mb-8 text-center relative overflow-hidden shadow-sm">
+                    {/* Decorative glowing background elements */}
+                    <div className="absolute -top-10 -right-10 w-24 h-24 bg-emerald-200/20 rounded-full blur-xl"></div>
+                    <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-teal-200/20 rounded-full blur-xl"></div>
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-center gap-1.5 mb-2 text-emerald-700 font-bold text-xs tracking-wider uppercase">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span>Your OTP / तुमचा ओटीपी</span>
+                      </div>
+                      
+                      <div className="text-4xl lg:text-5xl font-black text-emerald-800 tracking-[0.25em] font-mono my-3 drop-shadow-sm">
+                        {activeBooking?.otp}
+                      </div>
+                      
+                      <p className="text-[11px] text-slate-500 font-semibold mb-4 leading-relaxed">
+                        Use this code to activate the charging station.
+                        <br />
+                        <span className="text-slate-400 font-medium">(चार्जिंग सुरू करण्यासाठी हा कोड खाली भरा.)</span>
+                      </p>
+                      
+                      <button 
+                        type="button"
+                        onClick={() => setOtpInput(activeBooking?.otp || "")}
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-6 rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-[0.97] shadow-lg shadow-emerald-600/10 border border-emerald-500/20 text-xs uppercase tracking-wider"
+                      >
+                        <Zap className="w-4 h-4 text-amber-300 fill-amber-300 animate-pulse" />
+                        <span>⚡ Click here to auto-fill (आपोआप भरा)</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
                     <input 
                       type="text"
                       maxLength={6}
                       placeholder="0 0 0 0 0 0"
-                      className="w-full text-center text-5xl font-black border-0 bg-slate-50 rounded-3xl py-8 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all placeholder:text-slate-200 tracking-[0.2em]"
+                      className="w-full text-center text-4xl font-black border-2 border-slate-100 bg-slate-50 rounded-2xl py-6 outline-none focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 transition-all placeholder:text-slate-200 tracking-[0.2em]"
                       value={otpInput}
                       onChange={(e) => setOtpInput(e.target.value)}
                     />
                     <button 
                       onClick={handleVerify}
                       disabled={verifying || otpInput.length < 6}
-                      className="bg-primary hover:bg-primary-dark text-white font-black w-full py-6 rounded-[2rem] text-xl shadow-2xl shadow-primary/30 transition-all active:scale-95 disabled:opacity-50"
+                      className="bg-primary hover:bg-primary-dark text-white font-black w-full py-5 rounded-[1.5rem] text-lg shadow-xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
                     >
-                      {verifying ? <Loader2 className="animate-spin mx-auto w-8 h-8" /> : "Verify & Activate Charger"}
+                      {verifying ? <Loader2 className="animate-spin mx-auto w-6 h-6" /> : "Verify & Activate Charger"}
                     </button>
-                    <p className="text-center text-[10px] text-slate-300 font-bold uppercase tracking-widest italic font-medium">Please check your official parikrama email inbox</p>
+                    <p className="text-center text-[9px] text-slate-400 font-bold uppercase tracking-widest italic">Note: For demonstration and rural convenience, OTP is displayed on screen above.</p>
                   </div>
                 </>
               ) : (

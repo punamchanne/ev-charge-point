@@ -38,16 +38,48 @@ export default function UserDashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
+    let userData = localStorage.getItem("user");
+    
+    // Check if the ID is a valid 24-character hex string (ObjectId compatible)
+    const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
+
+    const generateDefaultUser = () => {
+      const hexChars = "0123456789abcdef";
+      let uniqueId = "";
+      for (let i = 0; i < 24; i++) {
+        uniqueId += hexChars[Math.floor(Math.random() * 16)];
+      }
+      return {
+        id: uniqueId,
+        name: "Guest User",
+        email: "guest@parikrama.edu",
+        role: "user"
+      };
+    };
+
     if (!userData) {
-      router.replace("/login");
+      const defaultUser = generateDefaultUser();
+      localStorage.setItem("user", JSON.stringify(defaultUser));
+      setUser(defaultUser);
+      fetchHistory(defaultUser.id);
     } else {
       try {
         const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-        fetchHistory(parsedUser.id);
+        if (!parsedUser.id || !isValidObjectId(parsedUser.id)) {
+          // Upgrade invalid ID to a valid ObjectId-compatible one
+          const defaultUser = generateDefaultUser();
+          localStorage.setItem("user", JSON.stringify(defaultUser));
+          setUser(defaultUser);
+          fetchHistory(defaultUser.id);
+        } else {
+          setUser(parsedUser);
+          fetchHistory(parsedUser.id);
+        }
       } catch (err) {
-        router.replace("/login");
+        const defaultUser = generateDefaultUser();
+        localStorage.setItem("user", JSON.stringify(defaultUser));
+        setUser(defaultUser);
+        fetchHistory(defaultUser.id);
       }
     }
   }, [router]);
@@ -78,9 +110,15 @@ export default function UserDashboard() {
     try {
       const res = await fetch(`/api/user/bookings?userId=${userId}`);
       const data = await res.json();
-      setBookings(data);
+      if (Array.isArray(data)) {
+        setBookings(data);
+      } else {
+        console.error("Failed to fetch history: data is not an array", data);
+        setBookings([]);
+      }
     } catch (err) {
       console.error("Failed to fetch history:", err);
+      setBookings([]);
     } finally {
       setLoadingBookings(false);
     }

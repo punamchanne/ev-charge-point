@@ -13,14 +13,38 @@ export async function POST(req: Request) {
     await dbConnect();
 
     // 1. Fetch one unused OTP for this slot type
-    const otpRecord = await OTPPool.findOneAndUpdate(
+    let otpRecord = await OTPPool.findOneAndUpdate(
       { slotType, isUsed: false },
       { isUsed: true },
       { new: true }
     );
 
     if (!otpRecord) {
-      return NextResponse.json({ error: "No OTPs available for this slot. Please contact admin." }, { status: 400 });
+      // Auto-recycle OTPs for this slot type when they run out
+      await OTPPool.updateMany({ slotType }, { isUsed: false });
+      otpRecord = await OTPPool.findOneAndUpdate(
+        { slotType, isUsed: false },
+        { isUsed: true },
+        { new: true }
+      );
+    }
+
+    if (!otpRecord) {
+      // Fallback: If OTPPool is completely empty in the DB, generate a new one
+      const prefixes: Record<string, string> = {
+        "15min": "115",
+        "30min": "230",
+        "45min": "345",
+        "60min": "460"
+      };
+      const prefix = prefixes[slotType] || "999";
+      const fallbackOtp = `${prefix}${Math.floor(100 + Math.random() * 900)}`;
+      
+      otpRecord = await OTPPool.create({
+        slotType,
+        otp: fallbackOtp,
+        isUsed: true
+      });
     }
 
     // 2. Create Booking

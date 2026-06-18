@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Protected routes
-  if (pathname.startsWith('/dashboard')) {
+  if (pathname.startsWith('/dashboard/admin')) {
     if (!token) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
@@ -19,13 +19,8 @@ export async function middleware(request: NextRequest) {
       const { payload } = await jwtVerify(token, JWT_SECRET)
       
       // Admin route protection
-      if (pathname.startsWith('/dashboard/admin') && payload.role !== 'admin') {
+      if (payload.role !== 'admin') {
         return NextResponse.redirect(new URL('/dashboard/user', request.url))
-      }
-      
-      // User route protection
-      if (pathname.startsWith('/dashboard/user') && payload.role === 'admin') {
-        return NextResponse.redirect(new URL('/dashboard/admin', request.url))
       }
     } catch (err) {
       return NextResponse.redirect(new URL('/login', request.url))
@@ -49,5 +44,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/register'],
+  matcher: ['/dashboard/admin/:path*', '/login', '/register'],
 }

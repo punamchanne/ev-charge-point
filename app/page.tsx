@@ -64,8 +64,8 @@ export default function LandingPage() {
           <a href="#contact" className="nav-link">Support</a>
         </div>
         <div className="flex gap-1.5 md:gap-4 items-center flex-wrap justify-end">
-          <Link href="/login" className="text-primary font-bold hover:text-accent transition-colors py-1.5 px-2.5 md:py-2 md:px-4 text-[10px] md:text-base border-2 border-primary/10 rounded-xl leading-none">ERP Login</Link>
-          <Link href="/register" className="bg-secondary hover:bg-amber-500 text-slate-900 font-bold py-1.5 px-2.5 md:py-2 md:px-6 text-[10px] md:text-base rounded-xl transition-all shadow-lg shadow-secondary/20 active:scale-95 leading-none">Book Slot</Link>
+          <Link href="/dashboard/user" className="text-primary font-bold hover:text-accent transition-colors py-1.5 px-2.5 md:py-2 md:px-4 text-[10px] md:text-base border-2 border-primary/10 rounded-xl leading-none">Dashboard</Link>
+          <Link href="/dashboard/user" className="bg-secondary hover:bg-amber-500 text-slate-900 font-bold py-1.5 px-2.5 md:py-2 md:px-6 text-[10px] md:text-base rounded-xl transition-all shadow-lg shadow-secondary/20 active:scale-95 leading-none">Book Slot</Link>
         </div>
       </nav>
 
@@ -104,7 +104,7 @@ export default function LandingPage() {
               Smart infrastructure for a sustainable 110-Acre academic ecosystem.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
-              <Link href="/register" className="bg-secondary hover:bg-amber-500 text-slate-900 font-bold px-5 py-3 sm:px-10 sm:py-5 text-sm sm:text-xl rounded-2xl flex items-center gap-2 shadow-2xl shadow-secondary/30 transition-all active:scale-95 leading-none">
+              <Link href="/dashboard/user" className="bg-secondary hover:bg-amber-500 text-slate-900 font-bold px-5 py-3 sm:px-10 sm:py-5 text-sm sm:text-xl rounded-2xl flex items-center gap-2 shadow-2xl shadow-secondary/30 transition-all active:scale-95 leading-none">
                 Start Booking <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
               </Link>
               <Link href="#pricing" className="bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white font-bold px-5 py-3 sm:px-10 sm:py-5 text-sm sm:text-xl rounded-2xl transition-all leading-none">
@@ -224,7 +224,7 @@ export default function LandingPage() {
                   <p className="text-white font-black text-2xl">{p.units}</p>
                   <p className="text-[10px] text-white/40 uppercase tracking-widest mt-1 font-bold">1 Unit = ₹2</p>
                 </div>
-                <Link href="/login" className="bg-white text-primary font-black py-5 rounded-[2rem] w-full block hover:bg-secondary hover:text-slate-900 transition-all shadow-xl shadow-black/20">Book Now</Link>
+                <Link href="/dashboard/user" className="bg-white text-primary font-black py-5 rounded-[2rem] w-full block hover:bg-secondary hover:text-slate-900 transition-all shadow-xl shadow-black/20">Book Now</Link>
               </motion.div>
             ))}
           </div>

@@ -119,11 +119,11 @@ export default function UserDashboard() {
     setPaymentStep("processing");
     try {
       // Simulate Razorpay Network Delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 300));
       setPaymentStep("success");
       
       // Wait for success animation
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 200));
       setShowPayment(false);
 
       const res = await fetch("/api/booking/create", {
@@ -178,7 +178,7 @@ export default function UserDashboard() {
         setActiveBooking(null);
         setOtpInput("");
         setVerificationResult(null);
-      }, 3000);
+      }, 500);
     } catch (err: any) {
       alert(err.message);
     } finally {

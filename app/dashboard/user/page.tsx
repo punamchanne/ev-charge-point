@@ -362,7 +362,7 @@ export default function UserDashboard() {
                     </button>
                   </div>
 
-                  <div className="flex flex-col items-center text-center mb-8">
+                  <div className="flex flex-col items-center text-center mb-6">
                     <div className="bg-emerald-50 text-emerald-600 p-6 rounded-full mb-6 border border-emerald-100 relative">
                       <span className="relative flex h-3 w-3 absolute top-0 right-0">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -375,7 +375,7 @@ export default function UserDashboard() {
                   </div>
 
                   {/* Slot summary info */}
-                  <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 mb-8 flex items-center justify-between">
+                  <div className="bg-slate-50 border border-slate-100 rounded-3xl p-6 mb-6 flex items-center justify-between">
                     <div>
                       <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Selected Slot / वेळ</span>
                       <span className="text-lg font-black text-slate-800">{activeBooking?.slotType}</span>
@@ -383,6 +383,21 @@ export default function UserDashboard() {
                     <div className="text-right">
                       <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Price / किंमत</span>
                       <span className="text-xl font-black text-primary">₹{activeBooking?.price}</span>
+                    </div>
+                  </div>
+
+                  {/* Rural-Friendly / Simplified OTP Display Box (Read-only, no inputs) */}
+                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-200/60 rounded-[2rem] p-6 mb-6 text-center relative overflow-hidden shadow-sm">
+                    <div className="absolute -top-10 -right-10 w-24 h-24 bg-emerald-200/20 rounded-full blur-xl"></div>
+                    <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-teal-200/20 rounded-full blur-xl"></div>
+                    
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-center gap-1.5 mb-1 text-emerald-700 font-bold text-[10px] tracking-wider uppercase">
+                        <span>Your OTP / तुमचा ओटीपी</span>
+                      </div>
+                      <div className="text-4xl font-black text-emerald-800 tracking-[0.2em] font-mono my-1 drop-shadow-sm">
+                        {activeBooking?.otp}
+                      </div>
                     </div>
                   </div>
 

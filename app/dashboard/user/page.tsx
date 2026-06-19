@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Zap, Clock, CreditCard, LogOut, CheckCircle, 
+import {
+  Zap, Clock, CreditCard, LogOut, CheckCircle,
   Loader2, X, History, LayoutDashboard, User as UserIcon,
   ChevronRight, Calendar, ShieldCheck, Lock, ChevronLeft
 } from "lucide-react";
@@ -14,7 +14,7 @@ import Image from "next/image";
 export default function UserDashboard() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState<string | null>(null);
-  
+
   // Payment Animation State
   const [showPayment, setShowPayment] = useState(false);
   const [paymentStep, setPaymentStep] = useState<"details" | "banking" | "processing" | "success">("details");
@@ -25,7 +25,7 @@ export default function UserDashboard() {
   const [isCharging, setIsCharging] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0); // in seconds
   const [chargingComplete, setChargingComplete] = useState(false);
-  
+
   // Booking/OTP State
   const [activeBooking, setActiveBooking] = useState<any>(null);
   const [showVerify, setShowVerify] = useState(false);
@@ -37,7 +37,7 @@ export default function UserDashboard() {
 
   useEffect(() => {
     let userData = localStorage.getItem("user");
-    
+
     // Check if the ID is a valid 24-character hex string (ObjectId compatible)
     const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
 
@@ -121,7 +121,7 @@ export default function UserDashboard() {
       // Simulate Razorpay Network Delay
       await new Promise(resolve => setTimeout(resolve, 300));
       setPaymentStep("success");
-      
+
       // Wait for success animation
       await new Promise(resolve => setTimeout(resolve, 200));
       setShowPayment(false);
@@ -166,7 +166,7 @@ export default function UserDashboard() {
       if (!res.ok) throw new Error(data.error);
 
       setVerificationResult("success");
-      
+
       setTimeout(() => {
         setShowVerify(false);
         // Start Charging Timer
@@ -205,49 +205,49 @@ export default function UserDashboard() {
     <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row font-sans">
       {/* Mobile Top Header */}
       <div className="lg:hidden flex items-center justify-between p-4 border-b border-slate-100 bg-white sticky top-0 z-50 shadow-sm">
-         <Image src="/logo-v3.png" alt="Logo" width={60} height={60} className="object-contain" />
-         <Link href="/" className="flex items-center gap-1.5 text-slate-500 hover:text-slate-800 font-bold text-xs bg-slate-50 hover:bg-slate-100 py-2 px-3 rounded-xl border border-slate-100 transition-all active:scale-95 shadow-sm">
-            <ChevronLeft className="w-4 h-4" /> Back / मागे जा
-         </Link>
+        <Image src="/logo-v3.png" alt="Logo" width={60} height={60} className="object-contain" />
+        <Link href="/" className="flex items-center gap-1.5 text-slate-500 hover:text-slate-800 font-bold text-xs bg-slate-50 hover:bg-slate-100 py-2 px-3 rounded-xl border border-slate-100 transition-all active:scale-95 shadow-sm">
+          <ChevronLeft className="w-4 h-4" /> Back / मागे जा
+        </Link>
       </div>
 
       {/* Sidebar - Desktop */}
       <aside className="hidden lg:flex w-80 border-r border-slate-100 flex-col p-8 sticky h-screen top-0 bg-white">
-         <div className="mb-12 flex flex-col items-center gap-4 bg-slate-50 p-6 rounded-3xl border border-slate-100">
-            <Image src="/logo-v3.png" alt="Logo" width={120} height={120} className="object-contain hover:scale-110 transition-transform" />
-            <div className="text-center">
-               <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Parikrama GOI</p>
-               <p className="text-[8px] font-bold text-slate-400 uppercase">EV Infrastructure</p>
-            </div>
-         </div>
+        <div className="mb-12 flex flex-col items-center gap-4 bg-slate-50 p-6 rounded-3xl border border-slate-100">
+          <Image src="/logo-v3.png" alt="Logo" width={120} height={120} className="object-contain hover:scale-110 transition-transform" />
+          <div className="text-center">
+            <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Parikrama GOI</p>
+            <p className="text-[8px] font-bold text-slate-400 uppercase">EV Infrastructure</p>
+          </div>
+        </div>
 
-         <nav className="space-y-4 flex-1">
-           <div 
-             className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold bg-primary text-white shadow-xl shadow-primary/20"
-           >
-             <LayoutDashboard className="w-5 h-5" />
-             Booking Slots
-           </div>
-         </nav>
+        <nav className="space-y-4 flex-1">
+          <div
+            className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold bg-primary text-white shadow-xl shadow-primary/20"
+          >
+            <LayoutDashboard className="w-5 h-5" />
+            Booking Slots
+          </div>
+        </nav>
 
         <div className="pt-8 border-t border-slate-100 mt-auto">
-           <div className="bg-slate-50 p-6 rounded-3xl flex flex-col gap-4">
-              <div className="flex items-center gap-4 overflow-hidden">
-                 <div className="bg-white p-3 rounded-full text-primary shadow-sm border border-slate-100 flex-shrink-0">
-                    <UserIcon className="w-5 h-5" />
-                 </div>
-                 <div className="truncate">
-                    <p className="font-black text-slate-800 text-sm leading-none capitalize truncate">{user.name}</p>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Institutional Member</p>
-                 </div>
+          <div className="bg-slate-50 p-6 rounded-3xl flex flex-col gap-4">
+            <div className="flex items-center gap-4 overflow-hidden">
+              <div className="bg-white p-3 rounded-full text-primary shadow-sm border border-slate-100 flex-shrink-0">
+                <UserIcon className="w-5 h-5" />
               </div>
-              <Link 
-                 href="/"
-                 className="flex items-center justify-center gap-2 w-full py-3.5 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 font-bold rounded-xl text-sm border border-slate-200/60 transition-colors shadow-sm"
-               >
-                 <ChevronLeft className="w-4 h-4" /> Back to Home / मागे जा
-               </Link>
-           </div>
+              <div className="truncate">
+                <p className="font-black text-slate-800 text-sm leading-none capitalize truncate">{user.name}</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Institutional Member</p>
+              </div>
+            </div>
+            <Link
+              href="/"
+              className="flex items-center justify-center gap-2 w-full py-3.5 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-800 font-bold rounded-xl text-sm border border-slate-200/60 transition-colors shadow-sm"
+            >
+              <ChevronLeft className="w-4 h-4" /> Back to Home / मागे जा
+            </Link>
+          </div>
         </div>
       </aside>
 
@@ -263,34 +263,33 @@ export default function UserDashboard() {
         {/* Charging Timer Section */}
         <AnimatePresence>
           {(isCharging || chargingComplete) && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className={`mb-10 p-8 rounded-[3rem] border-4 flex flex-col md:flex-row items-center justify-between gap-8 ${
-                chargingComplete ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-900 border-primary/20 shadow-2xl shadow-primary/20'
-              }`}
+              className={`mb-10 p-8 rounded-[3rem] border-4 flex flex-col md:flex-row items-center justify-between gap-8 ${chargingComplete ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-900 border-primary/20 shadow-2xl shadow-primary/20'
+                }`}
             >
               <div className="flex items-center gap-6">
-                 <div className={`p-4 rounded-3xl ${chargingComplete ? 'bg-emerald-100 text-emerald-600' : 'bg-primary/20 text-primary animate-pulse'}`}>
-                    <Zap className="w-8 h-8 font-bold" />
-                 </div>
-                 <div>
-                    <h3 className={`text-2xl font-black ${chargingComplete ? 'text-emerald-900' : 'text-white'}`}>
-                      {chargingComplete ? "Charging Successful!" : "Charging in Progress..."}
-                    </h3>
-                    <p className={chargingComplete ? 'text-emerald-600 font-bold' : 'text-slate-400 font-bold'}>
-                       {chargingComplete ? "Vehicle is fully charged and ready." : "Your EV is being powered by Parikrama Green Grid."}
-                    </p>
-                 </div>
+                <div className={`p-4 rounded-3xl ${chargingComplete ? 'bg-emerald-100 text-emerald-600' : 'bg-primary/20 text-primary animate-pulse'}`}>
+                  <Zap className="w-8 h-8 font-bold" />
+                </div>
+                <div>
+                  <h3 className={`text-2xl font-black ${chargingComplete ? 'text-emerald-900' : 'text-white'}`}>
+                    {chargingComplete ? "Charging Successful!" : "Charging in Progress..."}
+                  </h3>
+                  <p className={chargingComplete ? 'text-emerald-600 font-bold' : 'text-slate-400 font-bold'}>
+                    {chargingComplete ? "Vehicle is fully charged and ready." : "Your EV is being powered by Parikrama Green Grid."}
+                  </p>
+                </div>
               </div>
 
               {!chargingComplete ? (
                 <div className="flex flex-col items-center md:items-end">
-                   <span className="text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-2">Time Remaining</span>
-                   <span className="text-6xl font-black text-white tabular-nums tracking-tighter">{formatTime(timeLeft)}</span>
+                  <span className="text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-2">Time Remaining</span>
+                  <span className="text-6xl font-black text-white tabular-nums tracking-tighter">{formatTime(timeLeft)}</span>
                 </div>
               ) : (
-                <button 
+                <button
                   onClick={() => setChargingComplete(false)}
                   className="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all"
                 >
@@ -303,7 +302,7 @@ export default function UserDashboard() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {slots.map((slot, i) => (
-            <motion.div 
+            <motion.div
               key={i}
               whileHover={{ y: -5 }}
               className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col items-center text-center relative overflow-hidden group"
@@ -316,13 +315,13 @@ export default function UserDashboard() {
               <p className="bg-secondary/10 text-primary text-[10px] font-black px-3 py-1 rounded-full mt-4 border border-secondary/20">
                 {slot.units} UNITS
               </p>
-              
+
               <div className="mt-10 mb-8 border-t border-slate-50 pt-8 w-full text-center">
                 <span className="text-xs font-black text-slate-300 uppercase tracking-widest block mb-1">Price Plan</span>
                 <span className="text-4xl font-black text-slate-900">₹{slot.price}</span>
               </div>
 
-              <button 
+              <button
                 onClick={() => handleBooking(slot)}
                 disabled={loading !== null}
                 className="bg-primary hover:bg-primary-dark text-white font-black w-full py-5 rounded-[2rem] text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-50"
@@ -338,21 +337,21 @@ export default function UserDashboard() {
       <AnimatePresence>
         {showVerify && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-slate-900/80 backdrop-blur-md"
               onClick={() => !verifying && setShowVerify(false)}
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="relative bg-white w-full max-w-lg rounded-[3.5rem] p-12 shadow-2xl overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full"></div>
-              
+
               {!verificationResult ? (
                 <>
                   <div className="flex justify-between items-center mb-8">
@@ -390,7 +389,7 @@ export default function UserDashboard() {
                   <div className="bg-gradient-to-br from-emerald-50 to-teal-50/50 border border-emerald-200/60 rounded-[2rem] p-6 mb-6 text-center relative overflow-hidden shadow-sm">
                     <div className="absolute -top-10 -right-10 w-24 h-24 bg-emerald-200/20 rounded-full blur-xl"></div>
                     <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-teal-200/20 rounded-full blur-xl"></div>
-                    
+
                     <div className="relative z-10">
                       <div className="flex items-center justify-center gap-1.5 mb-1 text-emerald-700 font-bold text-[10px] tracking-wider uppercase">
                         <span>Your OTP / तुमचा ओटीपी</span>
@@ -398,33 +397,29 @@ export default function UserDashboard() {
                       <div className="text-4xl font-black text-emerald-800 tracking-[0.2em] font-mono my-1 drop-shadow-sm">
                         {activeBooking?.otp}
                       </div>
+                      <p className="text-xs text-slate-500 font-semibold mt-3 leading-relaxed">
+                        Put this OTP into your hardware to start charging.
+                        <br />
+                        <span className="text-slate-400 font-medium">(चार्जिंग सुरू करण्यासाठी हा OTP तुमच्या मशीन/हार्डवेअरमध्ये टाका.)</span>
+                      </p>
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <button 
-                      onClick={handleVerify}
-                      disabled={verifying}
-                      className="bg-primary hover:bg-primary-dark text-white font-black w-full py-5 rounded-2xl text-lg flex items-center justify-center gap-2 shadow-xl shadow-primary/20 transition-all active:scale-[0.97] disabled:opacity-50"
+                    <button
+                      onClick={() => {
+                        setShowVerify(false);
+                        setActiveBooking(null);
+                      }}
+                      className="bg-primary hover:bg-primary-dark text-white font-black w-full py-5 rounded-2xl text-lg flex items-center justify-center gap-2 shadow-xl shadow-primary/20 transition-all active:scale-[0.97]"
                     >
-                      {verifying ? (
-                        <Loader2 className="animate-spin w-6 h-6" />
-                      ) : (
-                        "Start Charging / चार्जिंग सुरू करा"
-                      )}
-                    </button>
-                    <button 
-                      onClick={() => setShowVerify(false)}
-                      disabled={verifying}
-                      className="w-full text-center text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors"
-                    >
-                      Cancel / रद्द करा
+                      OK
                     </button>
                   </div>
                 </>
               ) : (
                 <div className="text-center py-8">
-                  <motion.div 
+                  <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1, rotate: 360 }}
                     className="bg-emerald-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8 border-4 border-white shadow-xl"
@@ -434,7 +429,7 @@ export default function UserDashboard() {
                   <h3 className="text-4xl font-black text-slate-900 tracking-tight">Charger Active</h3>
                   <p className="text-slate-500 font-bold mt-4">Charging cycle started for {activeBooking?.slotType}.</p>
                   <div className="mt-10 p-4 bg-emerald-50 rounded-2xl text-emerald-700 font-bold text-sm">
-                     ⚡ Current Flow: 22.5 kWh Ready
+                    ⚡ Current Flow: 22.5 kWh Ready
                   </div>
                 </div>
               )}
@@ -447,13 +442,13 @@ export default function UserDashboard() {
       <AnimatePresence>
         {showPayment && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
             />
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -461,16 +456,16 @@ export default function UserDashboard() {
             >
               {/* Top Blue Bar (Razorpay style) */}
               <div className="bg-[#02042b] p-6 text-white flex flex-col items-center relative">
-                 {paymentStep === "details" && (
-                   <button onClick={() => setShowPayment(false)} className="absolute left-4 top-6 text-white/50 hover:text-white">
-                      <ChevronLeft className="w-5 h-5" />
-                   </button>
-                 )}
-                 <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-4">
-                    <Zap className="text-white w-6 h-6" />
-                 </div>
-                 <h3 className="font-bold text-lg mb-1">Parikrama EV Grid</h3>
-                 <p className="text-white/70 text-sm">₹{paymentAmount}.00</p>
+                {paymentStep === "details" && (
+                  <button onClick={() => setShowPayment(false)} className="absolute left-4 top-6 text-white/50 hover:text-white">
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                )}
+                <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-4">
+                  <Zap className="text-white w-6 h-6" />
+                </div>
+                <h3 className="font-bold text-lg mb-1">Parikrama EV Grid</h3>
+                <p className="text-white/70 text-sm">₹{paymentAmount}.00</p>
               </div>
 
               {/* Status Section */}
@@ -481,45 +476,45 @@ export default function UserDashboard() {
                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-4">Payment Methods</p>
                       <div className="space-y-3">
                         <button onClick={() => setPaymentStep("banking")} className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all border border-slate-100 group">
-                           <div className="flex items-center gap-4">
-                              <div className="bg-white p-2 rounded-lg shadow-sm group-hover:scale-110 transition-transform"><CreditCard className="w-5 h-5 text-primary" /></div>
-                              <span className="font-bold text-slate-700">Cards, UPI & Netbanking</span>
-                           </div>
-                           <ChevronRight className="w-4 h-4 text-slate-300" />
+                          <div className="flex items-center gap-4">
+                            <div className="bg-white p-2 rounded-lg shadow-sm group-hover:scale-110 transition-transform"><CreditCard className="w-5 h-5 text-primary" /></div>
+                            <span className="font-bold text-slate-700">Cards, UPI & Netbanking</span>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-slate-300" />
                         </button>
                         <div className="p-4 bg-slate-50 opacity-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                            <span className="font-bold text-slate-400">Wallet / Pay Later</span>
-                            <Lock className="w-3 h-3 text-slate-300" />
+                          <span className="font-bold text-slate-400">Wallet / Pay Later</span>
+                          <Lock className="w-3 h-3 text-slate-300" />
                         </div>
                       </div>
                     </div>
                     <div className="mt-auto p-4 bg-blue-50 rounded-xl flex gap-3 items-start">
-                       <ShieldCheck className="w-5 h-5 text-blue-500 flex-shrink-0" />
-                       <p className="text-[11px] text-blue-700 font-medium leading-relaxed">
-                          Your payment is protected by Razorpay. By continuing, you agree to our terms.
-                       </p>
+                      <ShieldCheck className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                      <p className="text-[11px] text-blue-700 font-medium leading-relaxed">
+                        Your payment is protected by Razorpay. By continuing, you agree to our terms.
+                      </p>
                     </div>
                   </div>
                 ) : paymentStep === "banking" ? (
                   <div className="p-6 flex flex-col flex-1">
-                     <h4 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
-                        <ChevronLeft className="w-4 h-4 cursor-pointer" onClick={() => setPaymentStep("details")} /> Select Bank
-                     </h4>
-                     <div className="grid grid-cols-2 gap-3 mb-8">
-                        {["HDFC", "SBI", "ICICI", "AXIS"].map(bank => (
-                          <button key={bank} onClick={processPayment} className="p-4 border-2 border-slate-100 hover:border-primary/30 hover:bg-primary/5 rounded-xl transition-all text-center">
-                             <div className="w-8 h-8 bg-slate-100 rounded-full mx-auto mb-2 flex items-center justify-center font-black text-[10px] text-slate-400">{bank[0]}</div>
-                             <span className="text-xs font-bold text-slate-600">{bank} Bank</span>
-                          </button>
-                        ))}
-                     </div>
-                     <button onClick={processPayment} className="mt-auto w-full py-4 bg-primary text-white font-black rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
-                        Pay ₹{paymentAmount}
-                     </button>
+                    <h4 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                      <ChevronLeft className="w-4 h-4 cursor-pointer" onClick={() => setPaymentStep("details")} /> Select Bank
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3 mb-8">
+                      {["HDFC", "SBI", "ICICI", "AXIS"].map(bank => (
+                        <button key={bank} onClick={processPayment} className="p-4 border-2 border-slate-100 hover:border-primary/30 hover:bg-primary/5 rounded-xl transition-all text-center">
+                          <div className="w-8 h-8 bg-slate-100 rounded-full mx-auto mb-2 flex items-center justify-center font-black text-[10px] text-slate-400">{bank[0]}</div>
+                          <span className="text-xs font-bold text-slate-600">{bank} Bank</span>
+                        </button>
+                      ))}
+                    </div>
+                    <button onClick={processPayment} className="mt-auto w-full py-4 bg-primary text-white font-black rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
+                      Pay ₹{paymentAmount}
+                    </button>
                   </div>
                 ) : paymentStep === "processing" ? (
                   <div className="p-8 flex flex-col items-center justify-center flex-1">
-                    <motion.div 
+                    <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                       className="w-16 h-16 border-4 border-slate-100 border-t-[#3388ff] rounded-full mb-6"
@@ -528,10 +523,10 @@ export default function UserDashboard() {
                     <p className="text-slate-500 text-sm mt-2 text-center underline px-10">Please authorized the transaction on your bank's page</p>
                   </div>
                 ) : (
-                  <motion.div 
-                     initial={{ scale: 0.8, opacity: 0 }}
-                     animate={{ scale: 1, opacity: 1 }}
-                     className="p-8 flex flex-col items-center justify-center flex-1"
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="p-8 flex flex-col items-center justify-center flex-1"
                   >
                     <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-6">
                       <motion.div
